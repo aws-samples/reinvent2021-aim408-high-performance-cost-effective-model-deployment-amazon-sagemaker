@@ -1,7 +1,7 @@
 # Deploying CloudWatch dashboard using CloudFormation
-[![launch_stack](../images/LaunchStack.jpg)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?templateURL=https://raw.githubusercontent.com/aws-samples/reinvent2021-aim408-achieve-high-performance-cost-effective-model-deployment-amazon-sagemaker/main/multi-model-endpoint/cloudformation/create-cw-dashboard.yaml)
+[![launch_stack](../images/LaunchStack.jpg)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?templateURL=https://raw.githubusercontent.com/aws-samples/reinvent2021-aim408-high-performance-cost-effective-model-deployment-amazon-sagemaker/main/cloudformation/create-cw-dashboard.yaml)
 
-^^ *Note the URL above is not working until the repo is created.*
+*Note that the link above takes you to us-east-1 AWS Region. The dashboard assumes the metrics and endpoints are in the same AWS Region where you deployed the CloudFormation stack. Therefore, make sure to switch to the AWS Region where your endpoints are hosted.*
 
 1. In the **Specify template** section, choose Next.
 1. In the **Specify stack details** section, for **Stack name**, enter a name and choose **Next**.

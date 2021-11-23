@@ -80,7 +80,14 @@ as shown in the bottom of the figure below.
 
 Each shell script starts a 2-worker distributed load testing job that creates 300 online users, with a spawn rate of 5 new users per second, hitting the respective endpoint for 15 minutes. The behavior of the ML inference is defined in [locustfile.py](./load-testing/locustfile.py). Each online user would randomly load a data point from the testing set we held out, and request against the state corresponding model in the multimodel endpoint for a prediction. We then use invoke_endpoint API from `boto3`'s `sagemaker-runtime` client to make invocation. The response status of the invocation is captured by `Locust` for summary. We specify the target model by `TargetModel` argument. And The target model is determined by `State` column in each data point.
 
-[opening locust's UI]
+### (Optional) Viewing Locust UI
+The two load testing processes run on 8080 and 8081 ports. You can view the Locust's UI for the first instance in AWS Cloud9 by clicking the **Preview** -> **Preview Running Application** or following instruction in [Preview a running application](https://docs.aws.amazon.com/cloud9/latest/user-guide/app-preview.html#app-preview-preview-app). 
+
+![preview-app](./images/preview-application-cloud9.png)
+
+If you would like to view both locust applications that are running in different ports. You can follow the process described in [Share a running application over the internet](https://docs.aws.amazon.com/cloud9/latest/user-guide/app-preview.html#app-preview-share) to setup the security group for the two ports and **Open** the URLs shown in the terminal as a new tab in your browser.
+
+![preview-app2](./images/preview-application-cloud9-2.png)
 
 ## Deploying endpoint metric dashboard in Amazon CloudWatch
 SageMaker endpoints, including multimodel endpoint, integrates with Amazon CloudWatch and emits metrics that captures the health and the statistics of an endpoint to Amazon CloudWatch at a 1-min frequency. We can visualize the metrics in Amazon CloudWatch directly, like in the dashboard we showed [previously](#cw-dashboard). 
@@ -88,8 +95,6 @@ SageMaker endpoints, including multimodel endpoint, integrates with Amazon Cloud
 We prepare the dashboard in a CloudFormation template for you to easily install.
 
 [![launch_stack](./images/LaunchStack.jpg)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?templateURL=https://raw.githubusercontent.com/aws-samples/reinvent2021-aim408-high-performance-cost-effective-model-deployment-amazon-sagemaker/main/cloudformation/create-cw-dashboard.yaml)
-
-^^ *Note the URL above is not working until the repo is created.*
 
 *Note that the link above takes you to us-east-1 AWS Region. The dashboard assumes the metrics and endpoints are in the same AWS Region where you deployed the CloudFormation stack. Therefore, make sure to switch to the AWS Region where your endpoints are hosted.*
 
@@ -129,11 +134,11 @@ This dashboard in Amazon CloudWatch displays the key metrics and charts from the
 
 We can quickly observe a couple of things happening from 300 simultaneous artificial users hitting each endpoint: 
 
-1. There are close to more invocations allowed on `ml.c5.2xlarge` instance, meaning a higher throughput; 
+1. There are more invocations allowed on `ml.c5.2xlarge` instance, meaning a higher throughput; 
 2. The model latency in the larger instance is lower than that of the smaller instance; 
 3. All 51 models are loaded into memory in the larger instance while only a subset of models loaded in memory on the c5.xl instance as “hot” models for invocation. 
 4. As a consequence, there is a constant loading and unloading of models in and out of the memory which takes close to 800ms on the smaller instance. There is also a whopping 3 seconds long model loading wait time, which indicates how much time in average an invocation has to wait MME to load a model for inference.
-5. CPU/RAM utilization are different too. The smaller instance constantly going beyond 100% CPU utilization, attributed to longer latency. And there is a much higher RAM utilization, preventing MME to load more models into memory.
+5. The two instances have different CPU/RAM utilization profile too. The smaller instance constantly going beyond 100% CPU utilization, attributed to longer latency. And there is a much higher RAM utilization, preventing MME to load more models into memory.
 
 Comparing the performance and characteristic of the two endpoints, we can conclude that the `ml.c5.2xlarge` instance gives a better/stable throughput, and lower latency when there is max 300 simultaneous users calling the endpoint compared to using a `ml.c5.xlarge` instance. Using one single `ml.c5.2xlarge` instance allows us to serve all 51 models without constant loading/unloading, and maintain a desired single digit milisecond latency. We don’t need to host 51 endpoints/instances, hence a significant cost saving.
 
@@ -143,7 +148,7 @@ It is important to create a robust endpoint when hosting your model. SageMaker e
 If you are using an Amazon Virtual Private Cloud (VPC), configure the VPC with at least two Subnets, each in a different Availability Zone. If an outage occurs or an instance fails, Amazon SageMaker automatically attempts to distribute your instances across Availability Zones.
 
 ## Autoscaling
-The benchmarking above is conducted based on single instance performance. We can treat that as a baseline performance and start scaling out the load and the number of instances. We can also apply Autoscaling policy to the endpoint any time, as shown in Autoscaling section in the [notebook](./churn-model-training-hosting.ipynb). Then you should conduct the load testing again to verify that the load would indeed trigger the Autoscaling policy and that the policy is appropriate to the load under the experimentation, in addition to the measuring the endpoint performance.
+The benchmarking above is conducted based on single instance performance. We can treat that as a baseline performance and start scaling out the load and the number of instances. We can also apply Autoscaling policy to the endpoint any time, as shown in *(Optional) Enable autoscaling* section in the [notebook](./churn-model-training-hosting.ipynb). Then you should conduct the load testing again to verify that the load would indeed trigger the Autoscaling policy and that the policy is appropriate to the load under the experimentation, in addition to the measuring the endpoint performance.
 
 ## Cleaning up
 You are reaching the end of the demo. After the demo, please delete all the SageMaker endpoints (last step in the [notebook](./churn-model-training-hosting.ipynb)) and resources created by the CloudFormation stack from the [CloudFormation console](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks) and Cloud9 instance to avoid incurring unnecessary cost. 
