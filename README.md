@@ -17,9 +17,8 @@ To analyze how our models perform under given compute infrasture and to optimize
 
 ![load-test](./images/sagemaker-model-deployment-load-testing.png)
 
-We will then analyze the load testing results in Amazon CloudWatch.
+<a name="cw-dashboard"></a>We will then analyze the load testing results in Amazon CloudWatch.
 
-<a name="cw-dashboard"></a>
 ![cw-dashboard](images/mme-load-testing-combined-2.png)
 
 In this repository, the code is provided for you to replicate the demo in the session. You are welcome to clone the repository while you follow the session. This README provides end-to-end instruction to run the demo. You can find the following sections:
