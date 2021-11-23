@@ -19,6 +19,7 @@ To analyze how our models perform under given compute infrasture and to optimize
 
 We will then analyze the load testing results in Amazon CloudWatch.
 
+<a name="cw-dashboard"></a>
 ![cw-dashboard](images/mme-load-testing-combined-2.png)
 
 In this repository, the code is provided for you to replicate the demo in the session. You are welcome to clone the repository while you follow the session. This README provides end-to-end instruction to run the demo. You can find the following sections:
@@ -55,7 +56,7 @@ Please follow the instruction in the notebook [churn-model-training-hosting.ipyn
 ## Load testing
 Once the two endpoints are up and running, we can proceed to conduct load testing. Load testing related code is in [load-testing](./load-testing/) directory in the repo. 
 
-To start we need to get the test data to the instance in the terminal, 
+To start we need to get the held-out test data from S3 bucket to the instance in the terminal. The file is generated and uploaded by the notebook [churn-model-training-hosting.ipynb](./churn-model-training-hosting.ipynb).
 
 ```shell
 cd ./load-testing/
