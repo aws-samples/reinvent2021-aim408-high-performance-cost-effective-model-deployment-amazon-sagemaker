@@ -44,7 +44,7 @@ To run the load testing in your local computer, make sure you configure your loc
 Clone this repository into SageMaker Studio and Cloud9 using a terminal.
 
 ```shell
-git clone <github-url>
+git clone https://github.com/aws-samples/reinvent2021-aim408-high-performance-cost-effective-model-deployment-amazon-sagemaker.git
 ```
 
 The load testing uses the distributed load testing framework: [Locust](https://docs.locust.io/en/stable/index.html)>=2.4.1.
