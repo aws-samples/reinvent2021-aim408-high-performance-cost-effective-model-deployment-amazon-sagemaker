@@ -1,0 +1,258 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Amazon CloudWatch dashboard to visualize multimodel endpoint metrics"
+Parameters:
+  EndpointC5XL:
+    Type: String
+    Description: 'Name for the SageMaker endpoint deployed with ml.c5.xlarge instance. NOT the ARN.'
+  EndpointC52XL:
+    Type: String
+    Description: 'Name for the SageMaker endpoint deployed with ml.c5.2xlarge instance. NOT the ARN.'
+
+Resources:
+  MMECloudWatchDashboard:
+      Type: AWS::CloudWatch::Dashboard
+      Properties:
+        DashboardBody: !Sub '{
+            "widgets": [
+                {
+                    "height": 6,
+                    "width": 6,
+                    "y": 12,
+                    "x": 18,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "/aws/sagemaker/Endpoints", "CPUUtilization", "EndpointName", "${EndpointC5XL}", "VariantName", "AllTraffic" ],
+                            [ ".", "MemoryUtilization", ".", ".", ".", "." ],
+                            [ ".", "DiskUtilization", ".", ".", ".", "." ],
+                            [ ".", "LoadedModelCount", ".", ".", ".", ".", { "yAxis": "right" } ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "title": "c5.xl-instance-metrics",
+                        "period": 60,
+                        "stat": "Average",
+                        "yAxis": {
+                            "right": {
+                                "label": "",
+                                "min": 30,
+                                "max": 55
+                            },
+                            "left": {
+                                "min": 0,
+                                "max": 120
+                            }
+                        }
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 9,
+                    "y": 12,
+                    "x": 9,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "AWS/SageMaker", "InvocationsPerInstance", "EndpointName", "${EndpointC5XL}", "VariantName", "AllTraffic", { "stat": "Sum", "visible": false } ],
+                            [ ".", "Invocations", ".", ".", ".", ".", { "stat": "Sum", "visible": false } ],
+                            [ ".", "ModelLoadingTime", ".", ".", ".", "." ],
+                            [ ".", "Invocation5XXErrors", ".", ".", ".", ".", { "stat": "Sum", "visible": false } ],
+                            [ ".", "Invocation4XXErrors", ".", ".", ".", ".", { "stat": "Sum", "visible": false } ],
+                            [ ".", "ModelCacheHit", ".", ".", ".", ".", { "stat": "Sum", "visible": false } ],
+                            [ ".", "ModelDownloadingTime", ".", ".", ".", "." ],
+                            [ ".", "ModelLoadingWaitTime", ".", ".", ".", "." ],
+                            [ ".", "ModelLatency", ".", ".", ".", "." ],
+                            [ ".", "OverheadLatency", ".", ".", ".", "." ],
+                            [ ".", "ModelUnloadingTime", ".", ".", ".", "." ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": true,
+                        "title": "c5.xl-MME-latency-metrics",
+                        "region": "${AWS::Region}",
+                        "period": 60,
+                        "stat": "Average"
+                    }
+                },
+                {
+                    "height": 3,
+                    "width": 24,
+                    "y": 9,
+                    "x": 0,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "AWS/SageMaker", "Invocation5XXErrors", "EndpointName", "${EndpointC5XL}", "VariantName", "AllTraffic", { "stat": "Sum", "label": "Invocation5XXErrors", "visible": false } ],
+                            [ ".", "Invocation4XXErrors", ".", ".", ".", ".", { "stat": "Sum", "label": "Invocation4XXErrors", "visible": false } ],
+                            [ ".", "Invocations", ".", ".", ".", ".", { "stat": "Sum", "label": "Invocations" } ],
+                            [ ".", "InvocationsPerInstance", ".", ".", ".", ".", { "stat": "Sum", "label": "InvocationsPerInstance", "visible": false } ],
+                            [ ".", "ModelLatency", ".", ".", ".", ".", { "label": "ModelLatency" } ],
+                            [ ".", "OverheadLatency", ".", ".", ".", ".", { "label": "OverheadLatency" } ],
+                            [ ".", "ModelLoadingWaitTime", ".", ".", ".", ".", { "label": "ModelLoadingWaitTime" } ],
+                            [ ".", "ModelDownloadingTime", ".", ".", ".", ".", { "label": "ModelDownloadingTime", "visible": false } ],
+                            [ ".", "ModelLoadingTime", ".", ".", ".", ".", { "label": "ModelLoadingTime" } ],
+                            [ ".", "ModelUnloadingTime", ".", ".", ".", ".", { "label": "ModelUnloadingTime" } ],
+                            [ "/aws/sagemaker/Endpoints", "LoadedModelCount", ".", ".", ".", "." ],
+                            [ "AWS/SageMaker", "ModelCacheHit", ".", ".", ".", ".", { "label": "ModelCacheHit", "visible": false } ]
+                        ],
+                        "view": "singleValue",
+                        "region": "${AWS::Region}",
+                        "stat": "Average",
+                        "period": 60,
+                        "title": "c5.xl Latest values"
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 9,
+                    "y": 12,
+                    "x": 0,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "AWS/SageMaker", "InvocationsPerInstance", "EndpointName", "${EndpointC5XL}", "VariantName", "AllTraffic" ],
+                            [ ".", "Invocations", ".", ".", ".", "." ],
+                            [ ".", "Invocation5XXErrors", ".", ".", ".", ".", { "yAxis": "right" } ],
+                            [ ".", "Invocation4XXErrors", ".", ".", ".", ".", { "yAxis": "right" } ],
+                            [ ".", "ModelCacheHit", ".", ".", ".", "." ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "stat": "Sum",
+                        "period": 60,
+                        "title": "c5.xl-Invocations-modelcache",
+                        "yAxis": {
+                            "right": {
+                                "label": "Errors"
+                            },
+                            "left": {
+                                "label": "Invocations"
+                            }
+                        }
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 6,
+                    "y": 3,
+                    "x": 18,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "/aws/sagemaker/Endpoints", "CPUUtilization", "EndpointName", "${EndpointC52XL}", "VariantName", "AllTraffic" ],
+                            [ ".", "MemoryUtilization", ".", ".", ".", "." ],
+                            [ ".", "DiskUtilization", ".", ".", ".", "." ],
+                            [ ".", "LoadedModelCount", ".", ".", ".", ".", { "yAxis": "right" } ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "title": "c5.2xl-instance-metrics",
+                        "period": 60,
+                        "stat": "Average",
+                        "yAxis": {
+                            "left": {
+                                "min": 0,
+                                "max": 120
+                            },
+                            "right": {
+                                "min": 30,
+                                "max": 55
+                            }
+                        }
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 9,
+                    "y": 3,
+                    "x": 9,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "AWS/SageMaker", "InvocationsPerInstance", "EndpointName", "${EndpointC52XL}", "VariantName", "AllTraffic", { "stat": "Sum", "visible": false } ],
+                            [ ".", "Invocations", ".", ".", ".", ".", { "stat": "Sum", "visible": false } ],
+                            [ ".", "ModelLoadingTime", ".", ".", ".", "." ],
+                            [ ".", "Invocation5XXErrors", ".", ".", ".", ".", { "stat": "Sum", "visible": false } ],
+                            [ ".", "Invocation4XXErrors", ".", ".", ".", ".", { "stat": "Sum", "visible": false } ],
+                            [ ".", "ModelCacheHit", ".", ".", ".", ".", { "stat": "Sum", "visible": false } ],
+                            [ ".", "ModelDownloadingTime", ".", ".", ".", "." ],
+                            [ ".", "ModelLoadingWaitTime", ".", ".", ".", "." ],
+                            [ ".", "ModelLatency", ".", ".", ".", "." ],
+                            [ ".", "OverheadLatency", ".", ".", ".", "." ],
+                            [ ".", "ModelUnloadingTime", ".", ".", ".", "." ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": true,
+                        "title": "c5.2xl-MME-latency-metrics",
+                        "region": "${AWS::Region}",
+                        "period": 60,
+                        "stat": "Average"
+                    }
+                },
+                {
+                    "height": 3,
+                    "width": 24,
+                    "y": 0,
+                    "x": 0,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "AWS/SageMaker", "Invocation5XXErrors", "EndpointName", "${EndpointC52XL}", "VariantName", "AllTraffic", { "stat": "Sum", "label": "Invocation5XXErrors", "visible": false } ],
+                            [ ".", "Invocation4XXErrors", ".", ".", ".", ".", { "stat": "Sum", "label": "Invocation4XXErrors", "visible": false } ],
+                            [ ".", "Invocations", ".", ".", ".", ".", { "stat": "Sum", "label": "Invocations" } ],
+                            [ ".", "InvocationsPerInstance", ".", ".", ".", ".", { "stat": "Sum", "label": "InvocationsPerInstance", "visible": false } ],
+                            [ ".", "ModelLatency", ".", ".", ".", ".", { "label": "ModelLatency" } ],
+                            [ ".", "OverheadLatency", ".", ".", ".", ".", { "label": "OverheadLatency" } ],
+                            [ ".", "ModelLoadingWaitTime", ".", ".", ".", ".", { "label": "ModelLoadingWaitTime" } ],
+                            [ ".", "ModelDownloadingTime", ".", ".", ".", ".", { "label": "ModelDownloadingTime", "visible": false } ],
+                            [ ".", "ModelLoadingTime", ".", ".", ".", ".", { "label": "ModelLoadingTime" } ],
+                            [ ".", "ModelUnloadingTime", ".", ".", ".", ".", { "label": "ModelUnloadingTime" } ],
+                            [ "/aws/sagemaker/Endpoints", "LoadedModelCount", ".", ".", ".", "." ],
+                            [ "AWS/SageMaker", "ModelCacheHit", ".", ".", ".", ".", { "label": "ModelCacheHit", "visible": false } ]
+                        ],
+                        "view": "singleValue",
+                        "region": "${AWS::Region}",
+                        "stat": "Average",
+                        "period": 60,
+                        "title": "c5.2xl Latest values"
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 9,
+                    "y": 3,
+                    "x": 0,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "AWS/SageMaker", "InvocationsPerInstance", "EndpointName", "${EndpointC52XL}", "VariantName", "AllTraffic" ],
+                            [ ".", "Invocations", ".", ".", ".", "." ],
+                            [ ".", "Invocation5XXErrors", ".", ".", ".", ".", { "yAxis": "right" } ],
+                            [ ".", "Invocation4XXErrors", ".", ".", ".", ".", { "yAxis": "right" } ],
+                            [ ".", "ModelCacheHit", ".", ".", ".", "." ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "stat": "Sum",
+                        "period": 60,
+                        "title": "c5.2xl-Invocations-modelcache",
+                        "setPeriodToTimeRange": true,
+                        "legend": {
+                            "position": "bottom"
+                        },
+                        "yAxis": {
+                            "right": {
+                                "label": "Errors"
+                            },
+                            "left": {
+                                "label": "Invocations"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+        '

@@ -50,7 +50,7 @@ git clone <github-url>
 The load testing uses the distributed load testing framework: [Locust](https://docs.locust.io/en/stable/index.html)>=2.4.1.
 
 ## Model training and deployment in Amazon SageMaker Studio
-Please follow the instruction in the notebook [churn-mme.ipynb](./churn-mme.ipynb) to prepare the data, train models, and host two multi-model endpoints in SageMaker.
+Please follow the instruction in the notebook [churn-model-training-hosting.ipynb](./churn-model-training-hosting.ipynb) to prepare the data, train models, and host two multi-model endpoints in SageMaker.
 
 ## Load testing
 Once the two endpoints are up and running, we can proceed to conduct load testing. Load testing related code is in [load-testing](./load-testing/) directory in the repo. 
@@ -143,10 +143,10 @@ It is important to create a robust endpoint when hosting your model. SageMaker e
 If you are using an Amazon Virtual Private Cloud (VPC), configure the VPC with at least two Subnets, each in a different Availability Zone. If an outage occurs or an instance fails, Amazon SageMaker automatically attempts to distribute your instances across Availability Zones.
 
 ## Autoscaling
-The benchmarking above is conducted based on single instance performance. We can treat that as a baseline performance and start scaling out the load and the number of instances. We can also apply Autoscaling policy to the endpoint any time, as shown in Autoscaling section in the [notebook](./churn-mme.ipynb). Then you should conduct the load testing again to verify that the load would indeed trigger the Autoscaling policy and that the policy is appropriate to the load under the experimentation, in addition to the measuring the endpoint performance.
+The benchmarking above is conducted based on single instance performance. We can treat that as a baseline performance and start scaling out the load and the number of instances. We can also apply Autoscaling policy to the endpoint any time, as shown in Autoscaling section in the [notebook](./churn-model-training-hosting.ipynb). Then you should conduct the load testing again to verify that the load would indeed trigger the Autoscaling policy and that the policy is appropriate to the load under the experimentation, in addition to the measuring the endpoint performance.
 
 ## Cleaning up
-You are reaching the end of the demo. After the demo, please delete all the SageMaker endpoints (last step in the [notebook](./churn-mme.ipynb)) and resources created by the CloudFormation stack from the [CloudFormation console](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks) and Cloud9 instance to avoid incurring unnecessary cost. 
+You are reaching the end of the demo. After the demo, please delete all the SageMaker endpoints (last step in the [notebook](./churn-model-training-hosting.ipynb)) and resources created by the CloudFormation stack from the [CloudFormation console](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks) and Cloud9 instance to avoid incurring unnecessary cost. 
 
 ## Additional resources
 While this talk and demo focus on choosing a SageMaker model hosting option and an optimal instance type, There are many great topics and solutions around achieving high performance and cost-effective model deployment.
