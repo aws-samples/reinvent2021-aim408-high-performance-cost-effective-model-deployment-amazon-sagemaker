@@ -13,7 +13,12 @@ We use a synthetic telecommunication customer churn dataset as our sample use ca
 
 ![hosting-2](./images/sagemaker-model-deployment-multimodel.png)
 
-To analyze how our models perform under given compute infrasture and to optimize it, we host two multi-model endpoints on two instance types with different compute capacity and compare the performance with a load test using Locust, a load-testing framework in python, in order to find out an optimal hosting configuration. 
+To analyze how our models perform under given compute infrasture and to optimize it, we host two multi-model endpoints on two instance types with different compute capacity and compare the performance with a load test using [Locust](https://docs.locust.io/en/stable/index.html), a distributed load-testing framework in python, in order to find out an optimal hosting configuration. The figure below illustrate the load testing on a SageMaker endpoint. A SageMaker endpoint consists of a HTTPs endpoint, a load balancer, and ML instances. 
+You can attach an autoscaling policy that would scale out/in based on a certain metric to a SageMaker endpoint. 
+The load balancer in a SageMaker endpoint distributes the traffic to the instances. 
+SageMaker emits invocation and instance metrics directly to Amazon CloudWatch. 
+By doing load testing, you can observe the response of your endpoint configuration in Amazon CloudWatch. 
+
 
 ![load-test](./images/sagemaker-model-deployment-load-testing.png)
 
@@ -47,7 +52,16 @@ Clone this repository into SageMaker Studio and Cloud9 using a terminal.
 git clone https://github.com/aws-samples/reinvent2021-aim408-high-performance-cost-effective-model-deployment-amazon-sagemaker.git
 ```
 
-The load testing uses the distributed load testing framework: [Locust](https://docs.locust.io/en/stable/index.html)>=2.4.1.
+The following dependencies are required in the load testing environment (either Cloud9 or your local computer):
+- [Locust](https://docs.locust.io/en/stable/index.html)>=2.4.1
+- boto3
+- numpy
+- pandas
+
+You can install the dependencies described in [requirements.txt](./requirements.txt)
+```shell
+pip install -r requirements.txt
+```
 
 ## Model training and deployment in Amazon SageMaker Studio
 Please follow the instruction in the notebook [churn-model-training-hosting.ipynb](./churn-model-training-hosting.ipynb) to prepare the data, train models, and host two multi-model endpoints in SageMaker.
@@ -99,12 +113,12 @@ We prepare the dashboard in a CloudFormation template for you to easily install.
 *Note that the link above takes you to us-east-1 AWS Region. The dashboard assumes the metrics and endpoints are in the same AWS Region where you deployed the CloudFormation stack. Therefore, make sure to switch to the AWS Region where your endpoints are hosted.*
 
 1. In the **Specify template** section, choose Next.
-1. In the **Specify stack details** section, for **Stack name**, enter a name, provide the names to the two endpoints we hosted, and choose **Next**.
+1. In the **Specify stack details** section, for **Stack name**, enter a name, provide the names to the two endpoints you hosted, and choose **Next**.
 1. In the **Configure stack options** section, choose **Next**.
 1. In the **Review** section, select **I acknowledge that AWS CloudFormation might create IAM resources** and choose **Next**.
 1. When the stack status changes to `CREATE_COMPLETE`, go to the **Resources** tab to find the dashboard created.
 
-Alternatively, you can create the stack using AWS Command Line Interface (AWS CLI). Again, make sure to deploy the stack in the AWS Region where your endpoints are hosted.
+Alternatively, you can create the stack using AWS Command Line Interface (AWS CLI). Replace the placeholders `${AWS_Region}`, `${sagemaker_endpoint_name_c5_xl}`, and `${sagemaker_endpoint_name_c5_2xl}` in the sample command below, and make sure to deploy the stack in the AWS Region where your endpoints are hosted.
 
 ```shell
 aws cloudformation create-stack --region ${AWS_Region} --stack-name cw-dashboard \
