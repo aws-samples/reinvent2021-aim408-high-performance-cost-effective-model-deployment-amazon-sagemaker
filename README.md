@@ -60,7 +60,8 @@ The following dependencies are required in the load testing environment (either 
 
 You can install the dependencies described in [requirements.txt](./requirements.txt)
 ```shell
-pip install -r requirements.txt
+cd reinvent2021-aim408-high-performance-cost-effective-model-deployment-amazon-sagemaker/
+pip install -r load-testing/requirements.txt
 ```
 
 ## Model training and deployment in Amazon SageMaker Studio
@@ -92,7 +93,7 @@ as shown in the bottom of the figure below.
 
 ![start-load-testing](./images/start-load-testing.png)
 
-Each shell script starts a 2-worker distributed load testing job that creates 300 online users, with a spawn rate of 5 new users per second, hitting the respective endpoint for 15 minutes. The behavior of the ML inference is defined in [locustfile.py](./load-testing/locustfile.py). Each online user would randomly load a data point from the testing set we held out, and request against the state corresponding model in the multimodel endpoint for a prediction. We then use invoke_endpoint API from `boto3`'s `sagemaker-runtime` client to make invocation. The response status of the invocation is captured by `Locust` for summary. We specify the target model by `TargetModel` argument. And The target model is determined by `State` column in each data point.
+Each shell script starts a 2-worker distributed load testing job that creates 300 online users, with a spawn rate of 5 new users per second, hitting the respective endpoint for 10 minutes. The behavior of the ML inference is defined in [locustfile.py](./load-testing/locustfile.py). Each online user would randomly load a data point from the testing set we held out, and request against the state corresponding model in the multimodel endpoint for a prediction. We then use invoke_endpoint API from `boto3`'s `sagemaker-runtime` client to make invocation. The response status of the invocation is captured by `Locust` for summary. We specify the target model by `TargetModel` argument. And The target model is determined by `State` column in each data point.
 
 ### (Optional) Viewing Locust UI
 The two load testing processes run on 8080 and 8081 ports. You can view the Locust's UI for the first instance in AWS Cloud9 by clicking the **Preview** -> **Preview Running Application** or following instruction in [Preview a running application](https://docs.aws.amazon.com/cloud9/latest/user-guide/app-preview.html#app-preview-preview-app). 
@@ -121,7 +122,8 @@ We prepare the dashboard in a CloudFormation template for you to easily install.
 Alternatively, you can create the stack using AWS Command Line Interface (AWS CLI). Replace the placeholders `${AWS_Region}`, `${sagemaker_endpoint_name_c5_xl}`, and `${sagemaker_endpoint_name_c5_2xl}` in the sample command below, and make sure to deploy the stack in the AWS Region where your endpoints are hosted.
 
 ```shell
-aws cloudformation create-stack --region ${AWS_Region} --stack-name cw-dashboard \
+aws cloudformation create-stack --region ${AWS_Region} \
+     --stack-name cw-dashboard \
      --template-body file://cloudformation/create-cw-dashboard.yml \
      --parameters ParameterKey=EndpointC5XL,ParameterValue=${sagemaker_endpoint_name_c5_xl} \
                   ParameterKey=EndpointC52XL,ParameterValue=${sagemaker_endpoint_name_c5_2xl} 
@@ -162,7 +164,7 @@ It is important to create a robust endpoint when hosting your model. SageMaker e
 If you are using an Amazon Virtual Private Cloud (VPC), configure the VPC with at least two Subnets, each in a different Availability Zone. If an outage occurs or an instance fails, Amazon SageMaker automatically attempts to distribute your instances across Availability Zones.
 
 ## Autoscaling
-The benchmarking above is conducted based on single instance performance. We can treat that as a baseline performance and start scaling out the load and the number of instances. We can also apply Autoscaling policy to the endpoint any time, as shown in *(Optional) Enable autoscaling* section in the [notebook](./churn-model-training-hosting.ipynb). Then you should conduct the load testing again to verify that the load would indeed trigger the Autoscaling policy and that the policy is appropriate to the load under the experimentation, in addition to the measuring the endpoint performance.
+The benchmarking above is conducted based on single instance performance. We can treat that as a baseline performance and start scaling out the load and the number of instances. We can also apply Autoscaling policy to the endpoint any time, as shown in *(Optional) Enable autoscaling* section in the [notebook](./churn-model-training-hosting.ipynb). Then you should conduct the load testing again to verify that the load would indeed trigger the Autoscaling policy and that the policy is appropriate to the load under the experimentation, in addition to the measuring the endpoint performance. You can read more about autoscaling strategies in this blog [Configuring autoscaling inference endpoints in Amazon SageMaker](https://aws.amazon.com/blogs/machine-learning/configuring-autoscaling-inference-endpoints-in-amazon-sagemaker/).
 
 ## Cleaning up
 You are reaching the end of the demo. After the demo, please delete all the SageMaker endpoints (last step in the [notebook](./churn-model-training-hosting.ipynb)) and resources created by the CloudFormation stack from the [CloudFormation console](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks) and Cloud9 instance to avoid incurring unnecessary cost. 
@@ -175,6 +177,8 @@ While this talk and demo focus on choosing a SageMaker model hosting option and 
 - [Choose the best AI accelerator and model compilation for computer vision inference with Amazon SageMaker](https://aws.amazon.com/blogs/machine-learning/choose-the-best-ai-accelerator-and-model-compilation-for-computer-vision-inference-with-amazon-sagemaker/)
 - [Run computer vision inference on large videos with Amazon SageMaker asynchronous endpoints](https://aws.amazon.com/blogs/machine-learning/run-computer-vision-inference-on-large-videos-with-amazon-sagemaker-asynchronous-endpoints/)
 - [A complete guide to AI accelerators for deep learning inference — GPUs, AWS Inferentia and Amazon Elastic Inference](https://towardsdatascience.com/a-complete-guide-to-ai-accelerators-for-deep-learning-inference-gpus-aws-inferentia-and-amazon-7a5d6804ef1c)
+- [Configuring autoscaling inference endpoints in Amazon SageMaker](https://aws.amazon.com/blogs/machine-learning/configuring-autoscaling-inference-endpoints-in-amazon-sagemaker/)
+- [Right-sizing resources and avoiding unnecessary costs in Amazon SageMaker](https://aws.amazon.com/blogs/machine-learning/right-sizing-resources-and-avoiding-unnecessary-costs-in-amazon-sagemaker/)
 
 ## Security
 
