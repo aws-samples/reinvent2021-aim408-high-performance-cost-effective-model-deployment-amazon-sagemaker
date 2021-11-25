@@ -14,6 +14,6 @@ locust -f locustfile.py --worker --loglevel ERROR --autostart \
 
 echo "Accessing locust dashboard at http://0.0.0.0:${port}"
 
-locust -f locustfile.py -u 300 -r 5 -t 15m --web-port $port \
+locust -f locustfile.py -u 300 -r 5 -t 10m --web-port $port \
        --print-stats --only-summary --loglevel ERROR \
        --autostart --autoquit 10 --master --master-bind-port $bind_port

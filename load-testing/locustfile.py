@@ -6,7 +6,7 @@ import time
 import numpy as np
 import pandas as pd
 
-sagemaker_runtime = boto3.client('sagemaker-runtime', region_name='us-east-1')
+sagemaker_runtime = boto3.client('sagemaker-runtime')
 
 endpoint_name=os.environ['ENDPOINT_NAME']
 
