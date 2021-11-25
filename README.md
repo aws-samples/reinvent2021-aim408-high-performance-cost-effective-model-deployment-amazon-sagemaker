@@ -58,7 +58,7 @@ The following dependencies are required in the load testing environment (either 
 - numpy
 - pandas
 
-You can install the dependencies described in [requirements.txt](./requirements.txt)
+You can install the dependencies described in [requirements.txt](./load-testing/requirements.txt)
 ```shell
 cd reinvent2021-aim408-high-performance-cost-effective-model-deployment-amazon-sagemaker/
 pip install -r load-testing/requirements.txt
