@@ -1,5 +1,5 @@
 # Achieve high performance and cost-effective model deployment
-Welcome to reInvent 2021 AIML session 408 **Achieve high performance and cost-effective model deployment**. 
+Welcome to reInvent 2021 AIML session 408 **Achieve high performance and cost-effective model deployment**. You can view the recording of the session on [Youtube](https://youtu.be/gWuO0gNKlm8).
 
 Imagine you have a use case where you are creating numerous models by geographic area in order to have a more localized understanding and prediction of your customer’s behavior. While you can host each model in one endpoint, you will soon dealing with management overhead and start burning budgets. Also you need to make sure you are using the right compute instance count and type to host the models optimally so that you are serving all requests under satisfactory latency while not over provisioning for unused capacity.
 
